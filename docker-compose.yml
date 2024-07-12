@@ -1,0 +1,56 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www
+    depends_on:
+      - redis
+      - pgsql
+    networks:
+      - microsservice
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "8001:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/:/etc/nginx/conf.d/
+    networks:
+      - microsservice
+    depends_on:
+      - app
+
+  pgsql:
+    image: 'postgres:13'
+    ports:
+      - '${FORWARD_DB_PORT:-5503}:5432'
+    environment:
+      POSTGRES_DB: '${DB_DATABASE}'
+      POSTGRES_USER: '${DB_USERNAME}'
+      POSTGRES_PASSWORD: '${DB_PASSWORD:-secret}'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - microsservice
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -q -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      retries: 3
+      timeout: 5s
+
+  redis:
+    image: redis:latest
+    networks:
+      - microsservice
+
+volumes:
+  pgdata:
+
+networks:
+  microsservice:
+    driver: bridge

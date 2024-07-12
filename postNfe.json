@@ -1,0 +1,198 @@
+{
+    "ide": {
+       "cUF": 29,
+       "natOp": "Venda de produto do estabelecimento",
+       "indPag": 0,
+       "mod": 55,
+       "serie": 1,
+       "dhEmi": "2021-02-10T10:12:13-02:00",
+       "tpNF": 1,
+       "tpImp": 1,
+       "tpEmis": 1,
+       "tpAmb": 2,
+       "finNFe": 1,
+       "indFinal": 0,
+       "indPres": 0,
+       "indIntermed": 0,
+       "procEmi": 0,
+       "verProc": 5.0,
+       "dhCont": null,
+       "xJust": null,
+       "modFrete": "1",
+       "vTroco": "2"
+    },
+    "emitente": {
+       "xNome": "teste dência",
+       "CNPJ": "12345678987878",
+       "idEstrangeiro": null,  
+       "xFant": "coraçâo",  
+       "indIEDest": 1,
+       "IE":   "2222020-1",  
+       "IEST":  "1",
+       "IM":  "im",
+       "CNAE": "12345678",
+       "CRT": "123456",
+       "xLgr": "1",
+       "nro": 1,
+       "xCpl": "1",
+       "xBairro": "1",
+       "cMun": "1",
+       "xMun": "1",
+       "UF":   "BA",
+       "CEP":  "1",
+       "xPais": "BRA",
+       "fone": "1"
+    },
+    "destinatario": {
+       "xNome": "1",
+       "type_emp": "juridica",
+       "CPF": "",
+       "CPF_CNPJ": "45.400.367/0001-30",
+       "indEstrangeiro":"1",
+       "indIEDest": 1,
+       "IE":"1",
+       "ISUF":"1",
+       "IM":"1",
+       "email":"1",
+       "xLgr":"1",
+       "nro":"1",
+       "xCpl":"1",
+       "xBairro":"1",
+       "cMun":"1",
+       "xMun":"1",
+       "UF":"SE",
+       "CEP":"1",
+       "cPais":"1",
+       "xPais":   "1"
+    },
+    "itens": [
+         {
+           "produtos": {
+                   "item": 1,
+                   "cEAN": 123123,
+                   "cBarra": 12312313,
+                   "xProd": "123",
+                   "cProd": "123",
+                   "NCM": 123456,
+                   "cBenef": "123",
+                   "EXTIPI": "23",
+                   "CFOP": 5102,
+                   "uCom": "uni",
+                   "qCom": "uni",
+                   "vUnCom": "uni",
+                   "vProd": "123",
+                   "cEANTrib": 123,
+                   "cBarraTrib": 123456789,
+                   "uTrib": "uni",
+                   "qTrib": 10,
+                   "vUnTrib": "uni",
+                   "vFrete": null,
+                   "vSeg": null,
+                   "vDesc": "0",
+                   "vOutro": "123",
+                   "indTot": "23",
+                   "xPed": "123",
+                   "nItemPed": "123",
+                   "nFCI": "123"
+   
+             },
+             "ipi": {
+                   "item":  " 1", 
+                   "clEnq":  null,
+                   "CNPJProd":  null,
+                   "cSelo":  null,
+                   "qSelo":  null,
+                   "cEnq":  "999",
+                   "CST":  "49",
+                   "vIPI":  " 150.00",
+                   "vBC":  " 1000.00",
+                   "pIPI":  " 15.00",
+                   "qUnid":  null,
+                   "vUnid":  null
+                },
+             "icms": {
+                   "item": 1,
+                   "CST": "07",
+                   "vBC": null,
+                   "pPIS": null,
+                   "vPIS": null,
+                   "qBCProd": null,
+                   "vAliqProd": null
+   
+             },
+             "pis": {
+                   "item": 1,
+                   "CST": "07",
+                   "vBC": null,
+                   "pCOFINS": null,
+                   "vCOFINS": null,
+                   "qBCProd": null,
+                   "vAliqProd": null    
+             },
+             "cofins": {
+                   "item": 1,
+                   "CST": "07",
+                   "vBC": null,
+                   "pCOFINS": null,
+                   "vCOFINS": null,
+                   "qBCProd": null,
+                   "vAliqProd": null  
+             }
+         }
+    ],
+    "transportadora": {
+        "xName": "teste",
+        "IE": null,
+        "xEnder": "rua a",
+        "xMun": "SSA",
+        "UF": "BA",
+        "CNPJ":"99999988899"
+    }, 
+    "veiculo": {
+        "placa": "1025",
+        "UF": "ba",
+        "RNTC": null
+    },
+    "volume": {
+       "qVol": "21",
+       "esp": "granel",
+       "marca": null,
+       "nVol": 1,
+       "psoL": "2000",
+       "pesoB": "2000"
+    },
+    "cobrança": {
+        "pagamentos": [
+            {
+                "tPag": "01",
+                "vPag": 100,
+                "CNPJ": null,
+                "tBand": null,
+                "cAut": null,
+                "tpIntegra": null,
+                "indPag": 0
+            }
+           ],
+           "fatura": {
+              "nFatura": 1,
+              "vOrig": 0,
+              "vDesc": null,
+              "vLiq": 0
+           },
+           "duplicata": [
+               {
+               "dVenc": "2023-12-01",
+               "vDup": 100
+               }
+           ]
+    },
+    "infRespTec": {
+       "autXML": null,
+       "xContato": "sefazBahia",
+       "email": "contato@sefaz",
+       "fone": 77777777
+    }
+   
+   }
+   
+   
