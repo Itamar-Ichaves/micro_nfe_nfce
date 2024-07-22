@@ -19,7 +19,11 @@ class CertificadoDigitalController extends Controller
 
     public function salvarCertificado(Request $request)
     {
+       // dd($request->all());
         $retorno = new stdClass;
+
+        ini_set('default_charset', 'ISO-8859-1');
+
     
         // Validação dos campos
         $validator = Validator::make($request->all(), [
@@ -28,7 +32,6 @@ class CertificadoDigitalController extends Controller
             'token_company' => 'required|string|max:255',
             'token_emitente' => 'required|string|max:255',
            
-            //'arquivo' => 'required|file|mimes:pfx',
         ]);
     
         if ($validator->fails()) {
@@ -45,15 +48,15 @@ class CertificadoDigitalController extends Controller
             $certificado->token_emitente = $request->token_emitente;
             $certificado->certificado_nome_arquivo = $request->certificado_nome_arquivo;
             $certificado->arquivo_binario = $request->arquivo_binario;
-    
-            if ($request->hasFile('arquivo') && $request->file('arquivo')->isValid()) {
-                $certificado->arquivo_binario = file_get_contents($request->file('arquivo')->getPathname());
-                
+            
+            if ($request->hasFile('arquivo_binario') && $request->file('arquivo_binario')->isValid()) {
+                $certificado->arquivo_binario = file_get_contents($request->file('arquivo_binario')->getPathname());
+            
                 $resultado = CertificadoDigitalService::lerCertificadoDigital($certificado->arquivo_binario, $certificado->senha);
-                    
+                
                 if (!$resultado->tem_erro) {
                     $certificado->inicio = $resultado->retorno->inicio ?? null;
-                    $certificado->expericao = $resultado->retorno->expiracao ?? null;
+                    $certificado->expiracao = $resultado->retorno->expiracao ?? null;
                     $certificado->serial = $resultado->retorno->serial ?? null;
                     $certificado->identificado = $resultado->retorno->id ?? null;
                 } else {
@@ -61,7 +64,7 @@ class CertificadoDigitalController extends Controller
                 }
             }
             
-            $this->certificadoDigital->salvarCertificado($certificado);
+            $this->certificadoDigital->salvarCertificado($certificado,  $certificado->arquivo_binario);
             
             $retorno->tem_erro = false;
             $retorno->erro = "";

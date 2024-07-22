@@ -29,8 +29,8 @@ class Certificado_digital extends Model
         'cnpj', 
         'serial',
         'inicio',
-        'expiração',
-        'identificador',
+        'expiracao',
+        'identificado',
         'idctx'
     ];
 

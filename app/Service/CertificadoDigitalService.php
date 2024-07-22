@@ -18,18 +18,18 @@ class CertificadoDigitalService
         $this->certificadoDigital = $certificadoDigitalRepository;
     }
 
-    public function salvarCertificado($data)
+    public function salvarCertificado($data,  $certificado)
     {
-        
+        //dd($certificado);
         $certificado = $this->consultarCertificado( $data->token_emitente, $data->token_company);
        
         $dataArray = (array) $data;
-        $dataArray['arquivo_binario'] = base64_decode($data->arquivo_binario); // Convertendo de base64 para binário
+        //$dataArray['arquivo_binario'] = base64_decode($data->arquivo_binario); // Convertendo de base64 para binário
 
         if (!$certificado) {
-            $this->certificadoDigital->createCertificado($dataArray);
+            $this->certificadoDigital->createCertificado($dataArray,  $dataArray['arquivo_binario']);
         } else {
-            $this->certificadoDigital->updateCertificado($dataArray);
+            $this->certificadoDigital->updateCertificado($dataArray,  $dataArray['arquivo_binario']);
         }
     }
 
@@ -43,6 +43,7 @@ class CertificadoDigitalService
         $retorno = new stdClass();
         
         try {
+            // Certifique-se de que $arquivo é o caminho do arquivo PFX
             $detalhe = Certificate::readPfx($arquivo, $senha);
 
             $cert = new stdClass();
@@ -60,7 +61,7 @@ class CertificadoDigitalService
             $retorno->titulo = "Erro ao ler Certificado";
             $retorno->erro = $e->getMessage();
         }
-       // dd($retorno);
+       
         return $retorno;
     }
 }

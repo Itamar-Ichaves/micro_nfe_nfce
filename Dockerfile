@@ -33,6 +33,9 @@ RUN useradd -G www-data,root -u $uid -d /home/$user $user
 RUN mkdir -p /home/$user/.composer && \
     chown -R $user:$user /home/$user
 
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd sockets zip mysqli soap gd bcmath \
+    && docker-php-ext-install pdo_pgsql pgsql
+
 # Install PostgreSQL extensions
 RUN apt-get update && \
     apt-get install -y libpq5 libpq-dev && \

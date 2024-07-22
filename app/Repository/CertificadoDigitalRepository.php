@@ -32,12 +32,24 @@ class CertificadoDigitalRepository
             ->update($data);      
     }
 
-    public function createCertificado(array $data)
+    public function createCertificado( $dados , $certificado)
     {
-        
-        return DB::table($this->table)->insert($data);
+    
+        return DB::table($this->table)->insert([
+            'token_company' => $dados['token_company'],
+            'token_emitente' => $dados['token_emitente'],
+            'arquivo_binario' => ($dados['arquivo_binario']),
+            'certificado_nome_arquivo' => $dados['certificado_nome_arquivo'],
+            'senha' => $dados['senha'],
+            'cnpj' => $dados['cnpj'],
+            'inicio'=> $dados['inicio'],
+            'expiracao' => $dados['expiracao'],
+            'serial'=> $dados['serial'],
+            'identificado'=> $dados['identificado'],
+          
+            
+        ]);
     }
-
     public function deleteCertificado($id)
     {
         return DB::table($this->table)

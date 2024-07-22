@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('nfe', function (Blueprint $table) {
             $table->uuid('id');
-            $table->uuid('token_company');
-            $table->uuid('token_emitente');
+           
             $table->string('cnpj');
             $table->string('chave');
             $table->string('status');
