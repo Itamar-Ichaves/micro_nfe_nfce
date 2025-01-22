@@ -1,0 +1,168 @@
+{
+  "ide": {
+    "cUF": 29,
+    "nNF": 14,
+    "natOp": "Venda de produto do estabelecimento",
+    "mod": 55,
+    "serie": 1,
+    "dhEmi": "2025-01-20T10:12:13-02:00",
+    "tpNF": 1,
+    "tpImp": 1,
+    "tpEmis": 1,
+    "tpAmb": 2,
+    "finNFe": 1,
+    "indFinal": 0,
+    "indPres": 0,
+    "procEmi": 0,
+    "verProc": "5.0",
+    "modFrete": "1",
+    "cMunFG": "2927408"
+  },
+  "emitente": {
+    "xNome": "loja emitente",
+    "CNPJ": "26430962000126",
+    "xFant": "fantasia loja emitente",
+    "IE": "158233344",
+    "IM": null,
+    "CRT": "4",
+    "xLgr": "MATA ATLANTICA",
+    "nro": "198",
+    "xBairro": "CANaaA",
+    "cMun": "2910800",
+    "xMun": "Salvador",
+    "UF": "BA",
+    "CEP": "40000-000",
+    "xPais": "Brasil",
+    "fone": "71999999999"
+  },
+  "destinatario": {
+    "xNome": "DESTINARIO",
+    "CPF_CNPJ": "54504372000199",
+    "indIEDest": 1,
+    "IE": "216906196",
+    "xLgr": "RUA SILVA",
+    "nro": "463",
+    "xBairro": "CENTRO",
+    "cMun": "2910800",
+    "xMun": "LAURO DE FREITAS",
+    "UF": "BA",
+    "CEP": "42702-300",
+    "xPais": "Brasil",
+    "fone": "79999999999"
+  },
+  "itens": [
+    {
+      "produto": {
+        "item": 1,
+        "xProd": "BOLA BASQUETE PLAYOFF IX LJ-PT T -U",
+        "cProd": "5301463300-U",
+        "cEAN": "7909342433855",
+        "cEANTrib": "7909342433855",
+        "NCM": "95066200",
+        "CFOP": "5102",
+        "uCom": "UN",
+        "qCom": 2,
+        "vUnCom": 50.00,
+        "vProd": 100.00,
+        "uTrib": "UN",
+        "qTrib": 2,
+        "vUnTrib": 50.00,
+        "indTot": 1,
+        "CEST": "2806400"
+      },
+      "ipi": {
+        "CST": "99",
+        "vIPI": 15.00,
+        "vBC": 100.00,
+        "pIPI": 15.00,
+        "cEnq": "999",
+        "tipo_calculo": 1
+      },
+      "icms": {
+        "orig": 0,
+        "CST": "102",
+        "vBC": 100.00,
+        "pICMS": 0,
+        "vICMS": 0,
+        "modBC": 1
+      },
+      "pis": {
+        "CST": "07",
+        "vBC": 100.00,
+        "pPIS": 1.65,
+        "vPIS": 1.65
+      },
+      "cofins": {
+        "CST": "07",
+        "vBC": 100.00,
+        "pCOFINS": 7.60,
+        "vCOFINS": 7.60
+      }
+    },
+    {
+      "produto": {
+        "item": 2,
+        "xProd": "BOLA FUTSAL RX 500 XXIII BC-RS-AZ T -U",
+        "cProd": "002",
+        "cEAN": "7909342602503",
+        "cEANTrib": "7909342602503",
+        "NCM": "95066200",
+        "CFOP": "5102",
+        "uCom": "UN",
+        "qCom": 1,
+        "vUnCom": 100.00,
+        "vProd": 100.00,
+        "uTrib": "UN",
+        "qTrib": 1,
+        "vUnTrib": 100.00,
+        "indTot": 1,
+        "CEST": "2806400"
+      },
+      "ipi": {
+        "CST": "99",
+        "vIPI": 15.00,
+        "vBC": 100.00,
+        "pIPI": 15.00,
+        "cEnq": "999",
+        "tipo_calculo": 1
+      },
+      "icms": {
+        "orig": 0,
+        "CST": "102",
+        "vBC": 100.00,
+        "pICMS": 0,
+        "vICMS": 0,
+        "modBC": 1
+      },
+      "pis": {
+        "CST": "07",
+        "vBC": 100.00,
+        "pPIS": 1.65,
+        "vPIS": 1.65
+      },
+      "cofins": {
+        "CST": "07",
+        "vBC": 100,
+        "pCOFINS": 7.60,
+        "vCOFINS": 7.60
+      }
+    }
+  ],
+  "pagamentos": [
+    {
+      "detalhe": {
+        "tPag": "1",
+        "vPag": 230.00
+      }
+    }
+  ],
+  "infRespTec": {
+    "CNPJ": "13937073000156",
+    "xContato": "SEFAZBahia",
+    "email": "plantaofiscal@sefaz.ba.gov.br",
+    "fone": "557133192501"
+  },
+  "autXML": {
+    "CNPJ": "13937073000156"
+  }
+}
