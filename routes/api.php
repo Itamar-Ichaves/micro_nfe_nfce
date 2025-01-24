@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CertificadoDigitalController;
+use App\Http\Controllers\DanfeNfeController;
 use App\Http\Controllers\Nfce\NFCeController;
 use App\Http\Controllers\Nfe\NFeController;
 use Illuminate\Support\Facades\Route;
@@ -21,7 +22,10 @@ use Illuminate\Support\Facades\Route;
  */
 Route::group(['prefix'=> 'nfe'], function () {
 Route::post('transmitir', [NFeController::class, 'transmitir']);
-Route::get('danfe', [NFeController::class, 'danfe']);
+Route::get('danfe', [DanfeNfeController::class, 'danfe']);
+Route::get('simulardanfe', [DanfeNfeController::class, 'simulardanfe']);
+Route::get('getNfesForCompany', [NFeController::class, 'getNfesForCompany']);
+Route::post('/cancelar/nfe', [NfeController::class, 'cancelarNfe']);
 });
 
 

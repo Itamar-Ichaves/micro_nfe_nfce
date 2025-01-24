@@ -25,13 +25,17 @@ use App\Models\
     Veiculo,
     Volume  
 };
+use App\Models\ConfiguracaoNfe;
 use Exception; 
+use NFePHP\Common\Certificate;
 use NFePHP\DA\NFe\Daevento;
 use NFePHP\DA\NFe\Danfe;
 use NFePHP\NFe\Common\Standardize;
+use NFePHP\NFe\Tools;
 use NFePHP\NFe\Complements;
 use NFePHP\NFe\Make;
 use stdClass;
+use App\Service\UtilService;
 
 class NfeService{
     public static function gerarNfe($notafiscal, $token_company, $token_emitente)
@@ -443,71 +447,91 @@ private static function retornoErro($titulo, $erro, $status, $cstat = null, $xml
         return $retorno;
     }
 
-    public static function cancelarNfe($justificativa, $chave, $configuracao){
-        $retorno = new \stdClass();
-        try {
-            $chave          = $chave;
-            $response       = $configuracao->tools->sefazConsultaChave($chave);
+    public static function cancelarNfe($justificativa, $nfe, $configuracao)
+{
+    $retorno = new \stdClass();
 
-            $stdCl  = new Standardize($response);
-            $std    = $stdCl->toStd();
-            $xJust  = $justificativa;
-            $nProt  = $std->protNFe->infProt->nProt;
+    try {
+        // Validar existência do protocolo
+        if (empty($nfe->protocolo)) {
+            throw new \Exception("Protocolo de autorização não encontrado para a nota fiscal.");
+        }
 
-            $response   = $configuracao->tools->sefazCancela($chave, $xJust, $nProt);
-            $stdCl      = new Standardize($response);
-            $std        = $stdCl->toStd();
+        // Cancelar a NF-e
+        $xJust = $justificativa;
+        $response = $configuracao->tools->sefazCancela($nfe->chave, $xJust, $nfe->protocolo);
+        $stdCl = new Standardize($response);
+        $std = $stdCl->toStd();
 
-
-            if ($std->cStat != 128) {
-                //erro registrar e voltar
-                $retorno->tem_erro  = true;
-                $retorno->titulo    = "O lote nem foi processado, houve um problema " ;
-                $retorno->erro      = $std->xMotivo;
-                return $retorno;
-            } else {
-                $cStat = $std->retEvento->infEvento->cStat;
-                if ($cStat == '101' || $cStat == '135' || $cStat == '155') {
-
-                    //Arquivo Original
-                    $path_original   = "notas/". $configuracao->pastaEmpresa."/xml/nfe/". $configuracao->pastaAmbiente."/autorizadas/" ;
-                    $xml_original    = file_get_contents($path_original. $chave."-nfe.xml");
-                    $xml_cancelado = Complements::cancelRegister($xml_original, $response);
-
-
-                    $path_cancelado   = "notas/". $configuracao->pastaEmpresa."/xml/nfe/". $configuracao->pastaAmbiente."/autorizadas/" ;
-                    if (!file_exists($path_cancelado)){
-                        mkdir($path_cancelado, 07777, true);
-                    }
-
-                    file_put_contents( $path_cancelado . $chave."-nfe.xml" , $xml_cancelado);
-                    chmod($path_cancelado, 07777);
-                    //Nota::Create(["cnpj" =>$configuracao->cnpj,"chave"=>$chave,"protocolo"=>$protocolo,"recibo"=>$recibo, "tipo"=>"nfe"]);
-
-                    $retorno->tem_erro  = false;
-                    $retorno->titulo    = "Nota cancelada com sucesso";
-                    $retorno->erro      = "";                    
-                    $retorno->cStat     = $cStat;
-                    $retorno->retorno   = $std;
-                    $retorno->xml       = $xml_cancelado;
-                    return $retorno;
-                } else {
-                    $retorno->tem_erro  = true;
-                    $retorno->titulo    = "01: Não foi Possível Fazer o Cancelamento";
-                    $retorno->erro      = $std->retEvento->infEvento->xMotivo ?? " Não foi Possível Fazer o Cancelamento";
-                    $retorno->retorno   = $std;
-                    return $retorno;
-                }
-            }
-        } catch (\Exception $e) {
-            $retorno->tem_erro  = true;
-            $retorno->titulo    = "02: Não foi Possível Fazer o Cancelamento";
-            $retorno->erro      = $e->getMessage();
+        // Verificar status do cancelamento
+        if ($std->cStat != 128) {
+            $retorno->tem_erro = true;
+            $retorno->titulo = "Erro no cancelamento";
+            $retorno->erro = $std->xMotivo ?? "Erro desconhecido no cancelamento.";
             return $retorno;
         }
 
+        // Verificar status do evento
+        $cStat = $std->retEvento->infEvento->cStat;
+        if (in_array($cStat, ['101', '135', '155'])) {
+            // Caminho do XML original
+            $path_original = storage_path("app/{$configuracao->pastaEmpresa}/xml/nfe/{$configuracao->pastaAmbiente}/autorizadas/");
+            $xml_original = @file_get_contents($path_original . $nfe->chave . "-nfe.xml");
+
+            if (!$xml_original) {
+                throw new \Exception("XML original não encontrado no caminho especificado.");
+            }
+
+            // Gerar o XML de cancelamento
+            $xml_cancelado = Complements::cancelRegister($xml_original, $response);
+
+            // Caminho para salvar o XML cancelado
+            $path_cancelado = storage_path("app/{$configuracao->pastaEmpresa}/xml/nfe/{$configuracao->pastaAmbiente}/canceladas/");
+            self::verificarCriarDiretorio($path_cancelado);
+
+            file_put_contents($path_cancelado . $nfe->chave . "-nfe.xml", $xml_cancelado);
+            chmod($path_cancelado . $nfe->chave . "-nfe.xml", 0777);
+
+            // Retornar sucesso
+            $retorno->tem_erro = false;
+            $retorno->titulo = "Nota cancelada com sucesso";
+            $retorno->erro = "";
+            $retorno->cStat = $cStat;
+            $retorno->retorno = $std;
+            $retorno->xml = $xml_cancelado;
+
+            return $retorno;
+        } else {
+            // Cancelamento não autorizado
+            $retorno->tem_erro = true;
+            $retorno->titulo = "Erro no cancelamento";
+            $retorno->erro = $std->retEvento->infEvento->xMotivo ?? "Cancelamento não autorizado.";
+            $retorno->retorno = $std;
+            return $retorno;
+        }
+    } catch (\Exception $e) {
+        // Erro no processo
+        $retorno->tem_erro = true;
+        $retorno->titulo = "Erro ao processar cancelamento";
+        $retorno->erro = $e->getMessage();
         return $retorno;
     }
+}
+
+/**
+ * Verifica e cria o diretório, se necessário.
+ */
+private static function verificarCriarDiretorio($path)
+{
+    if (!file_exists($path)) {
+        mkdir($path, 0777, true);
+    }
+}
+
+
+
+
+
 
     public static function cartaCorrecao($justificativa, $sequencia, $chave, $configuracao){
         $retorno            = new \stdClass();
@@ -628,7 +652,65 @@ private static function retornoErro($titulo, $erro, $status, $cstat = null, $xml
         return $retorno;
     }
 
-    
-    
+    public static function configuracaoNfe($request, $certificado)
+{
+    // Acessando os dados diretamente do array e garantindo que os valores sejam os tipos esperados
+    $tpAmb = (int) $request['tpAmb']; // Garantir que tpAmb é um inteiro
+    $CNPJ = $request['CNPJ'];
+    $xNome = $request['xNome'];
+    $UF = UtilService::getUf(intval($request['cUF']));
+   
+    $mod = isset($request['mod']) ? $request['mod'] : '55';  // Padrão para NFe
+
+    // Configuração do array com os dados recebidos
+    $arr = [
+        "atualizacao" => date('Y-m-d h:i:s'),
+        "tpAmb"       => $tpAmb,
+        "razaosocial" => $xNome,
+        "cnpj"        => $CNPJ,
+        "siglaUF"     => $UF,
+        "schemes"     => "PL_009_V4",
+        "versao"      => '4.00',
+        "tokenIBPT"   => "",
+        "CSC"         => "",
+        "CSCid"       => "",
+        "proxyConf"   => [
+            "proxyIp"   => "",
+            "proxyPort" => "",
+            "proxyUser" => "",
+            "proxyPass" => ""
+        ]
+    ];
+
+    // Instanciando a configuração
+    $objeto = new ConfiguracaoNfe();
+    $configJson = json_encode($arr);
+
+    // Certificado digital
+    $certificado_digital = $certificado->binario;
+    $senha = $certificado->dados['senha'];
+
+    // Populando o objeto Configuração
+    $objeto->cnpj = $CNPJ;
+    $objeto->tpAmb = $tpAmb;
+
+    // Ferramentas para a configuração
+    $objeto->tools = new Tools($configJson, Certificate::readPfx($certificado_digital, $senha));
+
+    // Pasta de ambiente (produção ou homologação)
+    $objeto->pastaAmbiente = ($tpAmb == 1) ? "producao" : "homologacao";
+
+    // Caminho da empresa para os arquivos NFe
+    $objeto->pastaEmpresa = storage_path("app/{$request['token_company']}/{$request['token_emitente']}/nfe/");
+
+    // Definindo o modelo do XML
+    $objeto->tools->model($mod);
+
+    // Retornar o objeto de configuração
+    return $objeto;
+}
+
+
+   
 
 }

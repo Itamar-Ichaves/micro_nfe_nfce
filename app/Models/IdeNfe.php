@@ -28,6 +28,8 @@ class IdeNfe extends Model {
     public $xJust;
     public $modFrete;
 
+    public $dSaiEnt;
+
     public function setarDados($data) {
         $this->cUF      = $data->cUF ?? null;
         $this->nNF      = $data->nNF ?? null;
@@ -37,7 +39,7 @@ class IdeNfe extends Model {
         $this->mod      = $data->mod ?? null;
         $this->serie    = $data->serie ?? null;
         $this->dhEmi    = $data->dhEmi ?? null;
-        $this->dhSaiEnt = $data->dhSaiEnt ?? null;
+        $this->dhSaiEnt  = $data->dhSaiEnt ?? null;
         $this->tpNF     = $data->tpNF ?? null;
         $this->idDest   = $data->idDest ?? null;
         $this->cMunFG   = $data->cMunFG ?? null;
@@ -63,7 +65,7 @@ class IdeNfe extends Model {
         $std->mod = $dados->mod;
         $std->serie = $dados->serie;
         $std->dhEmi = $dados->dhEmi ?? date("Y-m-d\TH:i:sP");
-        $std->dhSaiEnt = null;
+        $std->dhSaiEnt = $dados->dhSaiEnt ?? null;
         $std->tpNF = $dados->tpNF;
         $std->idDest = $dados->idDest;
         $std->cMunFG = $dados->cMunFG;

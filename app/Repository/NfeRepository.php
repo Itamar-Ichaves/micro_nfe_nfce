@@ -13,12 +13,20 @@ class NfeRepository
         $this->table = "notaNfe";
      }
 
-    public function getNfe($id, $token_company, $token_emitente)
+    public function getNfeId($id, $token_company, $token_emitente)
     {
         return DB::table($this->table)
             ->where('id', $id)
             ->where('token_company', $token_company)
             ->where('token_emitente', $token_emitente)
             ->first();
+    }
+
+    public function getNfesForCompany($token_company, $token_emitente)
+    {
+        return DB::table($this->table)
+            ->where('token_company', $token_company)
+            ->where('token_emitente', $token_emitente)
+            ->get();
     }
 }
