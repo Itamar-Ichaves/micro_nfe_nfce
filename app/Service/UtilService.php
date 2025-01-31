@@ -36,7 +36,7 @@ class UtilService
             53 => 'DF',
             31 => 'PI',
             15 => 'PE',
-            42 => 'AL',
+            42 => 'AL', 
         ];
 
         // Verifica se o código existe no mapa, se não, retorna null ou uma mensagem de erro

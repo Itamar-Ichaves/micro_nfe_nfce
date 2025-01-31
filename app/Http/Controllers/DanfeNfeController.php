@@ -9,7 +9,7 @@ use NFePHP\DA\NFe\Danfe;
 class DanfeNfeController extends Controller
 {
     protected $nfeRepository;
-
+ 
     public function __construct(NfeRepository $nfeRepository)
     {
         $this->nfeRepository = $nfeRepository;

@@ -116,7 +116,7 @@ public function getNfesForCompany(Request $request)
     $token_emitente = $request->token_emitente;
     return $this->nfeRepository->getNfesForCompany($token_company, $token_emitente);
 }
-
+ 
 public function cancelarNfe(Request $request)
 {
      

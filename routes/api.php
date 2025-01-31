@@ -36,7 +36,7 @@ Route::group(['prefix'=> 'nfce'], function () {
     Route::post('transmitir', [NFCeController::class, '']);
 });
 
-/**
+/** 
  * Routes Certificado Digital
  */
 Route::post('certificado', [CertificadoDigitalController::class, 'salvarCertificado']);

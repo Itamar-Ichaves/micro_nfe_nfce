@@ -653,7 +653,7 @@ private static function verificarCriarDiretorio($path)
     }
 
     public static function configuracaoNfe($request, $certificado)
-{
+{ 
     // Acessando os dados diretamente do array e garantindo que os valores sejam os tipos esperados
     $tpAmb = (int) $request['tpAmb']; // Garantir que tpAmb é um inteiro
     $CNPJ = $request['CNPJ'];
@@ -663,7 +663,7 @@ private static function verificarCriarDiretorio($path)
     $mod = isset($request['mod']) ? $request['mod'] : '55';  // Padrão para NFe
 
     // Configuração do array com os dados recebidos
-    $arr = [
+    $arr = [ 
         "atualizacao" => date('Y-m-d h:i:s'),
         "tpAmb"       => $tpAmb,
         "razaosocial" => $xNome,

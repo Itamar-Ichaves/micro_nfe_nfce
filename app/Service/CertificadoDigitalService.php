@@ -103,7 +103,7 @@ class CertificadoDigitalService
             $retorno->erro = $e->getMessage();
         }
     
-        return $retorno;
+        return $retorno; 
     }
     
 
