@@ -64,9 +64,9 @@ class ValidaDadosNfeService
         }
 
         // Nó Cobrança (opcional)
-        if (!empty($dados['cobranca'])) {
+        /*if (!empty($dados['cobranca'])) {
             $notafiscal->cobranca = self::validarCobranca($dados['cobranca']);
-        }
+        }*/
         
         // no infoResp Tecnico
         if (!empty($dados['infRespTec'])) {
@@ -398,8 +398,8 @@ public static function validarConfiguracao($emitente, $ide, $certificado)
 
     public static function validarCobranca($dados_cobranca){
         $cobranca = new stdClass();
-        $cobranca->fatura = null;
-        $cobranca->duplicatas = array();
+        //$cobranca->fatura = null;
+       // $cobranca->duplicatas = array();
 
         //Dados da fatura
         if(isset($dados_cobranca->fatura)){

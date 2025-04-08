@@ -134,44 +134,18 @@ class ValidarImpostoNfeService
 
 
     public static function validarIpi(array $array): IpiNfe
-{
+{ 
     $dados = (object) $array;
 
-    if (empty($dados->CST)) {
-        throw new \Exception('O Campo CST do node IPI é obrigatório.');
-    }
-
+   
     if (empty($dados->cEnq)) {
         throw new \Exception('O Campo cEnq do node IPI é obrigatório.');
     }
 
-    if (in_array($dados->CST, ['00', '49', '50', '99'], true)) {
-        if (empty($dados->tipo_calculo)) {
-            throw new \Exception('Você precisa definir um valor para o campo tipo_calculo: 1 (Cálculo por Alíquota) ou 2 (Cálculo por Unidade).');
-        }
-
-        if ($dados->tipo_calculo == 1) {
-            if (empty($dados->vBC)) {
-                throw new \Exception('O campo vBC do Node IPI é obrigatório.');
-            }
-            if (empty($dados->pIPI)) {
-                throw new \Exception('O campo pIPI do Node IPI é obrigatório.');
-            }
-        } elseif ($dados->tipo_calculo == 2) {
-            if (empty($dados->qUnid)) {
-                throw new \Exception('O campo qUnid do Node IPI é obrigatório.');
-            }
-            if (empty($dados->vUnid)) {
-                throw new \Exception('O campo vUnid do Node IPI é obrigatório.');
-            }
-        } else {
-            throw new \Exception('O campo tipo_calculo do Node IPI deve ser 1 (Cálculo por Alíquota) ou 2 (Cálculo por Unidade).');
-        }
-    }
-
+    
     $ipi = new IpiNfe();
     $ipi->setarDados($array);
-    $ipi->calculo($ipi);
+   // $ipi->calculo($ipi);
 
     return $ipi;
 }

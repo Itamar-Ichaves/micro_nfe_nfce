@@ -401,51 +401,69 @@ private static function retornoErro($titulo, $erro, $status, $cstat = null, $xml
 }
 
    
-    public static function danfe($xml){
-        $retorno = new \stdClass();
-        try {
-          // $logo = 'data://text/plain;base64,'. base64_encode(file_get_contents(realpath(__DIR__ . '/../images/tulipas.png')));
-            //$logo = realpath(__DIR__ . '/../images/tulipas.png');
+    
+/**
+ * Gera o DANFE da NFe e retorna o caminho do arquivo ou conteúdo PDF
+ * 
+ * @param string $xml XML autorizado da NFe (com protocolo)
+ * @param string $token_company Token da empresa
+ * @param string $token_emitente Token do emitente
+ * @param string $pastaAmbiente 'homologacao' ou 'producao'
+ * @param bool $retornarConteudo Se true, retorna o conteúdo PDF em vez do caminho
+ * @return \stdClass Objeto com {tem_erro: bool, erro: string, pdf: string, mensagem: string}
+ */
+public static function gerarDanfe($xml, $token_company, $token_emitente, $pastaAmbiente, $retornarConteudo = false)
+{
+    $retorno = new \stdClass();
+    $retorno->tem_erro = false;
+    $retorno->erro = '';
+    $retorno->pdf = '';
+    $retorno->mensagem = '';
 
-            $danfe = new Danfe($xml);
-            
-            $danfe->exibirTextoFatura = true;
-            $danfe->exibirPIS = true;
-           // $danfe->exibirCOFINS = true;
-            $danfe->exibirIcmsInterestadual = false;
-            $danfe->exibirValorTributos = true;
-            $danfe->descProdInfoComplemento = false;
-            $danfe->exibirNumeroItemPedido = false;
-            $danfe->setOcultarUnidadeTributavel(true);
-            $danfe->obsContShow(false);
-            $danfe->printParameters(
-                $orientacao = 'P',
-                $papel = 'A4',
-                $margSup = 2,
-                $margEsq = 2
-                );
-           // $danfe->logoParameters($logo, $logoAlign = 'C', $mode_bw = false);
-            $danfe->setDefaultFont($font = 'times');
-            $danfe->setDefaultDecimalPlaces(4);
-            $danfe->debugMode(false);
-            $danfe->creditsIntegratorFooter('mjailton Sistemas - mjailton.com.br');            
-            //Gera o PDF
-            $pdf = $danfe->render();
-
-            $retorno->tem_erro  = false;
-            $retorno->titulo    = "Pdf gerado com sucesso";
-            $retorno->erro      = "";
-            $retorno->pdf       = $pdf;
-            return $retorno;
-        } catch (\Exception $e) {
-            $retorno->tem_erro  = true;
-            $retorno->titulo    = "Erro gerar o PDF";
-            $retorno->erro      = $e->getMessage();
-            $retorno->pdf       = NULL;
-            return $retorno;
+    try {
+        // 1. Definir o caminho para salvar o DANFE
+        $path = storage_path("app/{$token_company}/{$token_emitente}/nfe/{$pastaAmbiente}/xml/pdf/");
+        
+        // Criar diretório se não existir
+        if (!file_exists($path)) {
+            mkdir($path, 0755, true);
         }
+
+        // 2. Padronizar o XML e extrair a chave
+        $stdCl = new Standardize();
+        $std = $stdCl->toStd($xml);
+        $chave = $std->protNFe->infProt->chNFe;
+        
+        // 3. Configurar o DANFE
+        $danfe = new Danfe($xml);
+        $danfe->debugMode(false);
+        $danfe->setDefaultFont('helvetica');
+        
+        
+        // 4. Gerar o PDF
+        $pdfContent = $danfe->render();
+        
+        // 5. Salvar ou retornar o PDF
+        $filename = "DANFE_{$chave}.pdf";
+        $fullPath = $path . $filename;
+        
+        if ($retornarConteudo) {
+            $retorno->pdf = $pdfContent;
+        } else {
+            file_put_contents($fullPath, $pdfContent);
+            $retorno->pdf = $fullPath;
+        }
+        
+        $retorno->mensagem = 'DANFE gerado com sucesso';
+        return $retorno;
+
+    } catch (\Exception $e) {
+        $retorno->tem_erro = true;
+        $retorno->erro = 'Erro ao gerar DANFE: ' . $e->getMessage();
         return $retorno;
     }
+}
+
 
     public static function cancelarNfe($justificativa, $nfe, $configuracao)
 {

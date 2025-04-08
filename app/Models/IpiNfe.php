@@ -23,17 +23,17 @@ class IpiNfe extends Model
     public $tipo_calculo;
 
     public function setarDados( $data){
-        $this->CST          = $data['CST'] ?? null;
-        $this->CNPJProd     = $data['CNPJProd'] ?? null;
-        $this->cSelo        = $data['cSelo'] ?? null;
-        $this->qSelo        = $data['qSelo'] ?? null;
-        $this->cEnq         = $data['cEnq'] ?? null;
-        $this->vBC          = $data['vBC'] ?? null;
-        $this->pIPI         = $data['pIPI'] ?? null;
-        $this->vIPI         = $data['vIPI'] ?? null;
-        $this->qUnid        = $data['qUnid'] ?? null;
-        $this->vUnid        = $data['vUnid'] ?? null;
-        $this->tipo_calculo = $data['tipo_calculo'] ?? null;
+          $this->CST          = $data['CST'] ?? null;
+          $this->CNPJProd     = $data['CNPJProd'] ?? null;
+          $this->cSelo        = $data['cSelo'] ?? null;
+          $this->qSelo        = $data['qSelo'] ?? null;
+          $this->cEnq         = $data['cEnq'] ?? null;
+          $this->vBC          = $data['vBC'] ?? null;
+         $this->pIPI         = $data['pIPI'] ?? null;
+         $this->vIPI         = $data['vIPI'] ?? null;
+         $this->qUnid        = $data['qUnid'] ?? null;
+         $this->vUnid        = $data['vUnid'] ?? null;
+         $this->tipo_calculo = $data['tipo_calculo'] ?? null;
     }
 
     public static function montarXml($cont,$nfe, $dados){

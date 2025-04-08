@@ -41,6 +41,7 @@ class NFeController extends Controller
         $token_emitente = $request->token_emitente;
 
         $dados_validos = ValidaDadosNfeService::validaDadosNfe($dados, $token_company, $token_emitente);
+       // dd($dados_validos);
         if ($dados_validos->tem_erro) {
             throw new \Exception("Erro na validação dos dados: " . $dados_validos->erro);
         }
@@ -72,7 +73,7 @@ class NFeController extends Controller
         if ($protocolo->tem_erro) {
             throw new \Exception("Erro ao consultar recibo: " . $protocolo->erro);
         }
-
+        
         // Sucesso: Retornar o protocolo final
         $retorno->mensagem = "XML transmitido com sucesso.";
         $retorno->protocolo = $protocolo;
@@ -132,6 +133,8 @@ public function cancelarNfe(Request $request)
     $nfeService = $this->nfeService->cancelarNfe($request->justificativa, $nfe, $config);
     return Response::json($nfeService);
 }
+
+public static function gerarDanfe($xml, $token_company, $token_emitente, $pastaAmbiente, $retornarConteudo = false)
 
 }
 
