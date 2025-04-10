@@ -38,23 +38,23 @@ class ValidaDadosNfeService
 
         // Validação dos nós principais
         self::validarNodePrincipal($dados);
-
+        
         // Validação do nó IDE
         $ide = self::validaIde($dados['ide'], $dados['emitente'], $dados['destinatario']);
         $notafiscal->ide = $ide;
-
+        
         // Validação do nó Emitente
         $emitente = self::validaEmitente($dados['emitente']);
         $notafiscal->emitente = $emitente;
-
+        
         // Validação do nó Destinatário
         $destinatario = self::validaDestinatario($dados['destinatario']);
         $notafiscal->destinatario = $destinatario;
-
+        
         // Validação dos itens
         $total = new TotalNfe();
         $notafiscal->itens = self::validaItens($dados['itens'], $total);
-
+        
         // Nó Pagamento
         $notafiscal->pagamentos = self::validarPagamentos($dados['pagamentos'] ?? []);
 
@@ -62,7 +62,7 @@ class ValidaDadosNfeService
         if (!empty($dados['transporte'])) {
             $notafiscal->transporte = self::validarTransporte($dados['transporte']);
         }
-
+         
         // Nó Cobrança (opcional)
         /*if (!empty($dados['cobranca'])) {
             $notafiscal->cobranca = self::validarCobranca($dados['cobranca']);
@@ -85,14 +85,14 @@ class ValidaDadosNfeService
         //$service = new CertificadoDigitalService();
         $certificado = CertificadoDigitalService::lerCertificadoDigital($token_company);
        
-
+         
         
         $notafiscal->certificado_digital = $certificado;
         
 
         // Configuração
         $notafiscal->configuracao = self::validarConfiguracao($emitente, $ide, $certificado);
-
+        
         $retorno->tem_erro = false;
         $retorno->erro = '';
         $retorno->notafiscal = $notafiscal;

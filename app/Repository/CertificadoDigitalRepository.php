@@ -16,12 +16,12 @@ class CertificadoDigitalRepository
         $this->entity = $certificado_digital;
     }
 
-    public function getCertificado($token_company)
+    public function getCertificado($token_company, $token_emitente)
     {
         return DB::table($this->table)
             ->where('token_company', $token_company)
-           // ->where('token_emitente', $token_emitente)
-            ->get();
+            ->where('token_emitente', $token_emitente)
+            ->first();
     }
 
     public function updateCertificado($dados_certificado, $certificado, $token_company, $token_emitente)

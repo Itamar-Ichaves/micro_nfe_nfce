@@ -15,6 +15,7 @@ return new class extends Migration
             $table->uuid('id');
             $table->uuid('token_company');
             $table->uuid('token_emitente');
+            $table->string('nfe_id');
             $table->string('cnpj');
             $table->string('status', 60)->nullable();
             $table->string('protocolo')->nullable();
@@ -22,6 +23,8 @@ return new class extends Migration
             $table->string('chave')->nullable();
             $table->string('caminho')->nullable();
             $table->string('nomeArquivo')->nullable();
+            $table->string("dhEmi")->nullable();
+            $table->string("dhSaiEnt")->nullable();
             $table->date('created_at');
             $table->date('updated_at');
         });

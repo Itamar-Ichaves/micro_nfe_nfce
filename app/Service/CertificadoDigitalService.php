@@ -22,16 +22,9 @@ class CertificadoDigitalService
     public function salvarCertificadoService($dados_certificado, $certificado, $token_company, $token_emitente)
     {
         try {
-            // Verifica se o certificado já existe para a empresa especificada
-            $certificate = $this->consultarCertificado($token_company);
-    
-            if ($certificate->isEmpty()) {
-                // Certificado não encontrado, realiza a inserção
+            
                 return $this->certificadoDigital->createCertificado($dados_certificado, $certificado, $token_company, $token_emitente);
-            } else {
-                // Certificado encontrado, realiza a atualização
-                return $this->certificadoDigital->updateCertificado($dados_certificado, $certificado, $token_company, $token_emitente);
-            }
+            
         } catch (\Exception $e) {
             // Tratamento de erro caso algo dê errado na operação
             throw new \Exception("Erro ao salvar o certificado: " . $e->getMessage());
@@ -42,10 +35,10 @@ class CertificadoDigitalService
     
 
 
-    public function consultarCertificado($token_company )
+    public function consultarCertificado($token_company, $token_emitente )
     {
        // dd($token_company);
-        return $this->certificadoDigital->getCertificado( $token_company);
+        return $this->certificadoDigital->getCertificado( $token_company, $token_emitente);
     }
 
     

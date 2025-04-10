@@ -12,14 +12,31 @@ class NotaNfe extends Model
     protected $table = 'notaNfe';
 
     protected $fillable = [
+        'id',
         'token_company',
         'token_emitente',
+        'nfe_id',
+        'nNF',
         'cnpj',
         'status',
         'protocolo',
         'recibo',
         'chave',
         'caminho',
-        'nomeArquivo'
+        'nomeArquivo',
+        'dhEmi',
+        'dhSaiEnt' 
+
+
+    ];
+
+    protected $primaryKey = 'id';
+    protected $keyType = 'string';
+    public $incrementing = false;
+    public $timestamps = false;
+
+    protected $casts = [
+        'dhEmi' => 'datetime',
+        'dhSaiEnt' => 'datetime',
     ];
 }

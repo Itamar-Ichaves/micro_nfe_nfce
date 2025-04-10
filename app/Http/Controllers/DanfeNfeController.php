@@ -25,11 +25,9 @@ class DanfeNfeController extends Controller
      */
     
 /*******  86fadfee-2b3f-4e31-a648-8f56c142d707  *******/   
-public function danfe(Request $request)
+public function danfe(Request $request, $token_company, $token_emitente, $chave)
 {  
-    $chave = $request->input('xml');
-    $token_company = $request->input('token_company');
-    $token_emitente = $request->input('token_emitente');
+;
 
     try {
         // 1. Obter a nota fiscal do repositório

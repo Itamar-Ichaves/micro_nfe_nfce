@@ -24,7 +24,7 @@ Route::group(['prefix'=> 'nfe'], function () {
 Route::post('transmitir', [NFeController::class, 'transmitir']);
 Route::get('danfe', [DanfeNfeController::class, 'danfe']);
 Route::get('simulardanfe', [DanfeNfeController::class, 'simulardanfe']);
-Route::get('getNfesForCompany', [NFeController::class, 'getNfesForCompany']);
+Route::post('getNfesForCompany', [NFeController::class, 'getNfesForCompany']);
 Route::post('/cancelar/nfe', [NfeController::class, 'cancelarNfe']);
 });
 
@@ -40,4 +40,4 @@ Route::group(['prefix'=> 'nfce'], function () {
  * Routes Certificado Digital
  */
 Route::post('certificado', [CertificadoDigitalController::class, 'salvarCertificado']);
-Route::get('certificado/{token_company}', [CertificadoDigitalController::class, 'consultarCertificado']);
+Route::post('certificado/get', [CertificadoDigitalController::class, 'consultarCertificado']);

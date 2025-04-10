@@ -115,10 +115,14 @@ class CertificadoDigitalController extends Controller
 
     
     
-public function consultarCertificado($token_company)
-{
-    
-    $cert = $this->certificadoDigital->consultarCertificado($token_company);
+public function consultarCertificado(Request $request)
+{ 
+    $token_company = $request->token_company;
+    $token_emitente = $request->token_emitente;
+
+    $cert = $this->certificadoDigital->consultarCertificado($token_company, $token_emitente);
+
+    return response()->json(['data' => $cert]);
 }
 
     

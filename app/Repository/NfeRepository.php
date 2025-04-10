@@ -23,7 +23,7 @@ class NfeRepository
     }
 
     public function getNfesForCompany($token_company, $token_emitente)
-    {
+    {   
         return NotaNfe::where('token_company', $token_company)
             ->where('token_emitente', $token_emitente)
             ->get();

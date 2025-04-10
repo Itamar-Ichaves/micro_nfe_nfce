@@ -86,7 +86,8 @@ class ValidarImpostoNfeService
                 break;
 
             case "500":
-                self::validarCampoObrigatorio($dados, 'vBCSTRet', 'O campo vBCSTRet do node Icms é obrigatório');
+                //self::validarCampoObrigatorio($dados, 'vBCSTRet', 'O campo vBCSTRet do node Icms é obrigatório');
+                self::validarCampoObrigatorio($dados, 'orig', 'O campo orig do node Icms é obrigatório');
                 break;
 
             case "101":
@@ -98,13 +99,13 @@ class ValidarImpostoNfeService
                 self::validarCampoObrigatorio($dados, 'orig', 'O campo orig do node Icms é obrigatório para CST 102');
                 break;
                 
-            case "500":
+           /* case "500":
                 self::validarCamposObrigatorios($dados, [
                 'vBCSTRet' => 'O campo vBCSTRet do node Icms é obrigatório para CST 500',
                  'vICMSSTRet' => 'O campo vICMSSTRet do node Icms é obrigatório para CST 500',
                 ]);
 
-                break;
+                break;*/
                 
             default:
                 // CSTs que não precisam de validação específica

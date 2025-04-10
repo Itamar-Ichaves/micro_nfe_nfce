@@ -36,8 +36,12 @@ use NFePHP\NFe\Complements;
 use NFePHP\NFe\Make;
 use stdClass;
 use App\Service\UtilService;
+use GuzzleHttp\Psr7\Request;
+use Illuminate\Support\Facades\Log;
 
 class NfeService{
+
+    
     public static function gerarNfe($notafiscal, $token_company, $token_emitente)
     {
         $nfe = new Make();
@@ -266,7 +270,7 @@ class NfeService{
         return $retorno;
     }
 
-    public static function consultarPorRecibo($xml, $chave, $recibo, $configuracao, $token_company, $token_emitente, $pastaAmbiente)
+    public static function consultarPorRecibo($xml, $chave, $recibo, $configuracao, $token_company, $token_emitente, $pastaAmbiente, $nfe_id)
 {
     $retorno = new \stdClass();
     try {
@@ -278,13 +282,13 @@ class NfeService{
         $std = $st->toStd($xmlResp);
 
         // Processa o status retornado pela SEFAZ
-        return self::processarStatusRecibo($std, $xml, $chave, $recibo, $configuracao, $token_company, $token_emitente, $pastaAmbiente, $xmlResp);
+        return self::processarStatusRecibo($std, $xml, $chave, $recibo, $configuracao, $token_company, $token_emitente, $pastaAmbiente, $xmlResp, $nfe_id);
     } catch (\Exception $e) {
         return self::retornoErro("Erro ao consultar a nota na SEFAZ", $e->getMessage(), "REJEITADO");
     }
 }
 
-private static function processarStatusRecibo($std, $xml, $chave, $recibo, $configuracao, $token_company, $token_emitente, $pastaAmbiente, $xmlResp)
+private static function processarStatusRecibo($std, $xml, $chave, $recibo, $configuracao, $token_company, $token_emitente, $pastaAmbiente, $xmlResp, $nfe_id)
 {
     if ($std->cStat == '103') {
         return self::retornoErro("Protocolo ainda não disponível", "O lote ainda não foi processado", "EM_PROCESSAMENTO");
@@ -295,16 +299,16 @@ private static function processarStatusRecibo($std, $xml, $chave, $recibo, $conf
     }
 
     if ($std->cStat == '104') { // Lote processado
-        return self::processarResultadoLote($std, $xml, $chave, $recibo, $configuracao, $token_company, $token_emitente, $pastaAmbiente, $xmlResp);
+        return self::processarResultadoLote($std, $xml, $chave, $recibo, $configuracao, $token_company, $token_emitente, $pastaAmbiente, $xmlResp, $nfe_id);
     }
 
     return self::retornoErro("Nota Rejeitada", "{$std->cStat}: {$std->xMotivo}", "REJEITADO", $std->cStat);
 }
 
-private static function processarResultadoLote($std, $xml, $chave, $recibo, $configuracao, $token_company, $token_emitente, $pastaAmbiente, $xmlResp)
+private static function processarResultadoLote($std, $xml, $chave, $recibo, $configuracao, $token_company, $token_emitente, $pastaAmbiente, $xmlResp, $nfe_id)
 {
     if ($std->protNFe->infProt->cStat == '100') { // Autorizado
-        return self::salvarXmlAutorizado($std, $xml, $chave, $recibo, $configuracao, $token_company, $token_emitente, $pastaAmbiente, $xmlResp);
+        return self::salvarXmlAutorizado($std, $xml, $chave, $recibo, $configuracao, $token_company, $token_emitente, $pastaAmbiente, $xmlResp, $nfe_id);
     }
 
     if (in_array($std->protNFe->infProt->cStat, ["110", "301", "302"])) { // Denegada
@@ -320,36 +324,134 @@ private static function processarResultadoLote($std, $xml, $chave, $recibo, $con
     );
 }
 
-private static function salvarXmlAutorizado($std, $xml, $chave, $recibo, $configuracao, $token_company, $token_emitente, $pastaAmbiente, $xmlResp)
+private static function salvarXmlAutorizado($std, $xml, $chave, $recibo, $configuracao, $token_company, $token_emitente, $pastaAmbiente, $xmlResp, $nfe_id)
 {
     $protocolo = $std->protNFe->infProt->nProt;
     $xmlAutorizado = Complements::toAuthorize($xml, $xmlResp);
+    
+    // Salvar o XML autorizado
     $caminho_nome = self::salvarArquivo($token_company, $token_emitente, $pastaAmbiente, "autorizadas", $chave, $xmlAutorizado);
-     
-
-    NotaNfe::create([
+    
+    // Gerar o DANFE (mas não salvar ainda, será feito no cliente se necessário)
+    $danfeResult = self::gerarDanfe($xmlAutorizado, $token_company, $chave);
+    
+    // Salvar dados no banco
+    $nota = NotaNfe::create([
         "token_company" => $token_company,
         "token_emitente" => $token_emitente,
+        "nfe_id" => $nfe_id,
         "cnpj" => $configuracao->cnpj,
         "chave" => $chave,
         "protocolo" => $protocolo,
         "status" => "AUTORIZADO",
         "recibo" => $recibo,
         "caminho" => $caminho_nome['caminho'],
-        "nomeArquivo" => $caminho_nome['nomeArquivo']
+        "nomeArquivo" => $caminho_nome['nomeArquivo'],
+        "dhEmi" => $std->protNFe->infProt->dhRecbto,
+        "dhSaiEnt" => $std->protNFe->infProt->dhRecbto
     ]);
-
-    return (object)[
+    
+    // Retornar no formato esperado pelo cliente
+    return [
         "tem_erro" => false,
-        "titulo" => "XML autorizado com sucesso",
-        "erro" => "",
-        "recibo" => $recibo,
-        "chave" => $chave,
-        "status" => "AUTORIZADO",
-        "protocolo" => $protocolo,
-        "xml" => $xmlResp,
+        "mensagem" => "XML transmitido com sucesso.",
+        "protocolo" => [
+            "tem_erro" => false,
+            "titulo" => "XML autorizado com sucesso",
+            "erro" => "",
+            "recibo" => $recibo,
+            "nfe_id" => $nfe_id,
+            "chave" => $chave,
+            "status" => "AUTORIZADO",
+            "protocolo" => $protocolo,
+            "xml" => $xmlResp,
+            "nota_id" => $nota->id,
+            "danfe" => $danfeResult->success ? $danfeResult->pdf_base64 : null
+        ]
     ];
 }
+
+private static function gerarDanfe($xmlAutorizado, $token_company, $chave, $download = false)
+{
+    try {
+        // Configurar o DANFE
+        $danfe = new \NFePHP\DA\NFe\Danfe($xmlAutorizado);
+        $danfe->debugMode(false);
+        $danfe->setDefaultFont('helvetica');
+        $danfe->setOcultarUnidadeTributavel(false);
+        
+        // Configurações opcionais (logo)
+        $logoPath = storage_path("app/{$token_company}/logo.jpg");
+        if (file_exists($logoPath)) {
+            $danfe->setLogo($logoPath);
+        }
+        
+        // Gerar PDF
+        $pdfContent = $danfe->render();
+        
+        // Se for para download direto
+        if ($download) {
+            header('Content-Type: application/pdf');
+            header('Content-Disposition: attachment; filename="DANFE_' . $chave . '.pdf"');
+            header('Content-Length: ' . strlen($pdfContent));
+            echo $pdfContent;
+            exit;
+        }
+        
+        return (object)[
+            'success' => true,
+            'pdf_content' => $pdfContent,
+            'pdf_base64' => base64_encode($pdfContent),
+            'chave' => $chave
+        ];
+        
+    } catch (\Exception $e) {
+         Log::error('Erro ao gerar DANFE', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+        
+        return (object)[
+            'success' => false,
+            'error' => $e->getMessage()
+        ];
+    }
+}
+
+// Método para download do DANFE separadamente
+public static function downloadDanfe($chave, $token_company)
+{
+    try {
+        // Buscar a nota no banco de dados
+        $nota = NotaNfe::where('chave', $chave)
+                      ->where('token_company', $token_company)
+                      ->firstOrFail();
+        
+        // Buscar o XML autorizado
+        $xmlPath = storage_path('app') . $nota->caminho . '/' . $nota->nomeArquivo;
+        $xmlAutorizado = file_get_contents($xmlPath);
+        
+        // Gerar e fazer download do DANFE
+        self::gerarDanfe($xmlAutorizado, $token_company, $chave, true);
+        
+    } catch (\Exception $e) {
+        \Log::error('Erro ao baixar DANFE', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+        
+        if (request()->wantsJson()) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 500);
+        }
+        
+        abort(500, 'Erro ao gerar DANFE: ' . $e->getMessage());
+    }
+}
+
+
 
 private static function salvarXmlDenegado($std, $chave, $recibo, $configuracao, $token_company, $token_emitente, $pastaAmbiente, $xmlResp)
 {
@@ -401,69 +503,7 @@ private static function retornoErro($titulo, $erro, $status, $cstat = null, $xml
 }
 
    
-    
-/**
- * Gera o DANFE da NFe e retorna o caminho do arquivo ou conteúdo PDF
- * 
- * @param string $xml XML autorizado da NFe (com protocolo)
- * @param string $token_company Token da empresa
- * @param string $token_emitente Token do emitente
- * @param string $pastaAmbiente 'homologacao' ou 'producao'
- * @param bool $retornarConteudo Se true, retorna o conteúdo PDF em vez do caminho
- * @return \stdClass Objeto com {tem_erro: bool, erro: string, pdf: string, mensagem: string}
- */
-public static function gerarDanfe($xml, $token_company, $token_emitente, $pastaAmbiente, $retornarConteudo = false)
-{
-    $retorno = new \stdClass();
-    $retorno->tem_erro = false;
-    $retorno->erro = '';
-    $retorno->pdf = '';
-    $retorno->mensagem = '';
-
-    try {
-        // 1. Definir o caminho para salvar o DANFE
-        $path = storage_path("app/{$token_company}/{$token_emitente}/nfe/{$pastaAmbiente}/xml/pdf/");
-        
-        // Criar diretório se não existir
-        if (!file_exists($path)) {
-            mkdir($path, 0755, true);
-        }
-
-        // 2. Padronizar o XML e extrair a chave
-        $stdCl = new Standardize();
-        $std = $stdCl->toStd($xml);
-        $chave = $std->protNFe->infProt->chNFe;
-        
-        // 3. Configurar o DANFE
-        $danfe = new Danfe($xml);
-        $danfe->debugMode(false);
-        $danfe->setDefaultFont('helvetica');
-        
-        
-        // 4. Gerar o PDF
-        $pdfContent = $danfe->render();
-        
-        // 5. Salvar ou retornar o PDF
-        $filename = "DANFE_{$chave}.pdf";
-        $fullPath = $path . $filename;
-        
-        if ($retornarConteudo) {
-            $retorno->pdf = $pdfContent;
-        } else {
-            file_put_contents($fullPath, $pdfContent);
-            $retorno->pdf = $fullPath;
-        }
-        
-        $retorno->mensagem = 'DANFE gerado com sucesso';
-        return $retorno;
-
-    } catch (\Exception $e) {
-        $retorno->tem_erro = true;
-        $retorno->erro = 'Erro ao gerar DANFE: ' . $e->getMessage();
-        return $retorno;
-    }
-}
-
+ 
 
     public static function cancelarNfe($justificativa, $nfe, $configuracao)
 {
