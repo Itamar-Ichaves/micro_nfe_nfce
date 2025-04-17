@@ -16,6 +16,7 @@ return new class extends Migration
             $table->uuid('token_company');
             $table->uuid('token_emitente');
             $table->string('nfe_id');
+            $table->int('nNF');
             $table->string('cnpj');
             $table->string('status', 60)->nullable();
             $table->string('protocolo')->nullable();

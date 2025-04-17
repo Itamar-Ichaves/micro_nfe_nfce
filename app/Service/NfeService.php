@@ -28,15 +28,13 @@ use App\Models\
 use App\Models\ConfiguracaoNfe;
 use Exception; 
 use NFePHP\Common\Certificate;
-use NFePHP\DA\NFe\Daevento;
-use NFePHP\DA\NFe\Danfe;
+use NFePHP\DA\NFe\Daevento; 
 use NFePHP\NFe\Common\Standardize;
 use NFePHP\NFe\Tools;
 use NFePHP\NFe\Complements;
 use NFePHP\NFe\Make;
 use stdClass;
-use App\Service\UtilService;
-use GuzzleHttp\Psr7\Request;
+use App\Service\UtilService; 
 use Illuminate\Support\Facades\Log;
 
 class NfeService{
@@ -348,7 +346,8 @@ private static function salvarXmlAutorizado($std, $xml, $chave, $recibo, $config
         "caminho" => $caminho_nome['caminho'],
         "nomeArquivo" => $caminho_nome['nomeArquivo'],
         "dhEmi" => $std->protNFe->infProt->dhRecbto,
-        "dhSaiEnt" => $std->protNFe->infProt->dhRecbto
+        "dhSaiEnt" => $std->protNFe->infProt->dhRecbto,
+        
     ]);
     
     // Retornar no formato esperado pelo cliente
@@ -366,6 +365,7 @@ private static function salvarXmlAutorizado($std, $xml, $chave, $recibo, $config
             "protocolo" => $protocolo,
             "xml" => $xmlResp,
             "nota_id" => $nota->id,
+            "xmlAutorizado" => $xmlAutorizado,
             "danfe" => $danfeResult->success ? $danfeResult->pdf_base64 : null
         ]
     ];

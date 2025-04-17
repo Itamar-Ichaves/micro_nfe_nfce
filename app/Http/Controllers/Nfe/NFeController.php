@@ -2,17 +2,14 @@
 
 namespace App\Http\Controllers\Nfe;
 
-use App\Http\Controllers\Controller;
-use App\Http\Controllers\DanfeNfeController;
+use App\Http\Controllers\Controller; 
 use App\Models\NotaNfe;
 use App\Repository\NfeRepository;
 use App\Service\CertificadoDigitalService;
 use app\Service\NfeService;
-use App\Service\ValidaDadosNfeService;
-use Faker\Provider\ar_EG\Company;
+use App\Service\ValidaDadosNfeService; 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use NFePHP\DA\NFe\Danfe;
+use Illuminate\Http\Request; 
 use Response;
 
 class NFeController extends Controller
